@@ -6,10 +6,10 @@ For sprint, we're adding:
     - CMP compares values in two registers (registerA vs. registerB)
     - if == set Equal E flag to 1, 
         - else, set to 0
-    - if registerA <= registerB,
+    - if registerA < registerB,
         - set the Less-than L flag to 1
         - otherwise set it to 0
-    - if registerA >= registerB,
+    - if registerA > registerB,
         - set Greater-than G flag to 1
         - else, set to 0
 - equal (LS-8)
@@ -92,6 +92,29 @@ class CPU:
             self.reg[reg_a] -= selfreg[reb_b]
         elif operation == "MUL":
             self.reg[reg_a] *= self.reg[reg_b]
+
+        ## Create CMP function in ALU.
+        elif operation == "CMP":
+            if self.reg[reg_a] == self.reg[reg_b]:
+                self.flag = 0b00000001
+            # If reg_a is < reg_b
+            elif self.reg[reg_a] < self.reg[reg_b]:
+                # Set the less than flag to 1
+                self.flag = 0b00000001
+            # If reg_a is > reg_b
+            elif self.reg[reg_a] > self.reg[reg_b]:
+                # Set the greater than flag to 1
+                self.flag = 0b00000001
+            
+    # - CMP compares values in two registers (registerA vs. registerB)
+    # - if == set Equal E flag to 1, 
+    #     - else, set to 0
+    # - if registerA <= registerB,
+    #     - set the Less-than L flag to 1
+    #     - otherwise set it to 0
+    # - if registerA >= registerB,
+    #     - set Greater-than G flag to 1
+    #     - else, set to 0
 
         else:
             raise Exception("Unsupported ALU operation")
@@ -178,7 +201,12 @@ class CPU:
             ##### CMP, JMP, JEQ, and JNE #####
             elif instruction == 0b10100111:
                 # CMP function
-                pass
+                reg_a = self.ram_read(self.pc + 1)
+                reg_b = self.ram_read(self.pc + 2)
+                # Call ALU operation via CMP
+                self.alu("CMP", reg_a, reg_b)
+                self.pc += 3
+
             
             elif instruction == 0b01010100:
                 # JMP function

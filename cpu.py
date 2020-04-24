@@ -1,26 +1,3 @@
-"""CPU functionality."""
-
-"""
-For sprint, we're adding:
-- CMP instruction (LS-8)
-    - CMP compares values in two registers (registerA vs. registerB)
-    - if == set Equal E flag to 1, 
-        - else, set to 0
-    - if registerA < registerB,
-        - set the Less-than L flag to 1
-        - otherwise set it to 0
-    - if registerA > registerB,
-        - set Greater-than G flag to 1
-        - else, set to 0
-- equal (LS-8)
-- JMP (aka jump) instruction 
-    - Jumps to address stored in given register
-    - Set the PC to the address stored in the given register
-- JEQ & JNE instructions
-    JEQ: If equal flag is set (true), jump to the address stored in the given register.
-    JNE: If E flag is clear (false, 0), jump to address stored in given register
-"""
-
 import sys
 
 class CPU:
@@ -42,21 +19,6 @@ class CPU:
 
         address = 0
 
-        # For now, we've just hardcoded a program:
-        ### Removing hardcoded comments to create read-in function
-        # program = [
-        #     # From print8.ls8
-        #     0b10000010, # LDI R0,8
-        #     0b00000000, # registrar 0
-        #     0b00001000, # value 8
-        #     0b01000111, # PRN R0
-        #     0b00000000, # print value in first registrar
-        #     0b00000001, # HLT
-        # ]
-
-        # for instruction in program:
-        #     self.ram[address] = instruction
-        #     address += 1
         with open(script) as f:
             for line in f:
 
@@ -98,26 +60,19 @@ class CPU:
         ## Create CMP function in ALU.
         elif operation == "CMP":
             if self.reg[reg_a] == self.reg[reg_b]:
+                print("A and B are equal")
                 self.flag = 0b00000001
             # If reg_a is < reg_b
             elif self.reg[reg_a] < self.reg[reg_b]:
                 # Set the less than flag to 1
-                self.flag = 0b00000100
+                print("A is less than B")
+                self.flag = 0b00000010
             # If reg_a is > reg_b
             elif self.reg[reg_a] > self.reg[reg_b]:
                 # Set the greater than flag to 1
-                self.flag = 0b00000010
+                print("A is greater than B")
+                self.flag = 0b00000100
             
-    # - CMP compares values in two registers (registerA vs. registerB)
-    # - if == set Equal E flag to 1, 
-    #     - else, set to 0
-    # - if registerA <= registerB,
-    #     - set the Less-than L flag to 1
-    #     - otherwise set it to 0
-    # - if registerA >= registerB,
-    #     - set Greater-than G flag to 1
-    #     - else, set to 0
-
         else:
             raise Exception("Unsupported ALU operation")
 
@@ -212,18 +167,43 @@ class CPU:
 
             
             elif instruction == 0b01010100:
-                # JMP function
-                # Jumps to address stored in given address
+                """
+                JMP function
+                Jumps to address stored in given address
+                """
+                # We're "jumping" to the next value in the PC.  
                 address = self.ram_read(self.pc + 1)
                 self.pc = self.reg[address]
 
             elif instruction == 0b01010101:
-                # JEQ
-                pass
+                """
+                JEQ
+                If equal flag is set (true), jump to the 
+                address stored in the given register.
+                """
+                # if flag is true (1)
+                if self.flag == 0b00000001:
+                    # jump to address stored in given register
+                    address = self.ram_read(self.pc + 1)
+                    self.pc = self.reg[address]
+
+                else:
+                    self.pc += 2
 
             elif instruction == 0b01010110:
-                # JNE
-                pass
+                """
+                JNE
+                If equal flag is clear (false, 0), jump to the 
+                address stored in the given register.
+                """
+                # if flag is false (0)
+                if self.flag == 0b00000000:
+                    # jump to address stored in given register
+                    address = self.ram_read(self.pc + 1)
+                    self.pc = self.reg[address]
+
+                else:
+                    self.pc += 2
 
 
 
@@ -232,3 +212,28 @@ class CPU:
                 print(f"Current Program Counter value: {self.pc}")
                 print(f"Your issued command: {self.ram_read(self.pc)}")
                 sys.exit(1)
+
+
+
+"""CPU functionality."""
+
+"""
+For sprint, we're adding:
+- CMP instruction (LS-8)
+    - CMP compares values in two registers (registerA vs. registerB)
+    - if == set Equal E flag to 1, 
+        - else, set to 0
+    - if registerA < registerB,
+        - set the Less-than L flag to 1
+        - otherwise set it to 0
+    - if registerA > registerB,
+        - set Greater-than G flag to 1
+        - else, set to 0
+- equal (LS-8)
+- JMP (aka jump) instruction 
+    - Jumps to address stored in given register
+    - Set the PC to the address stored in the given register
+- JEQ & JNE instructions
+    JEQ: If equal flag is set (true), jump to the address stored in the given register.
+    JNE: If E flag is clear (false, 0), jump to address stored in given register
+"""

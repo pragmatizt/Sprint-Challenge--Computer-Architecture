@@ -63,11 +63,13 @@ class CPU:
                 comment_split = line.split("#")
                 command = comment_split[0].strip()
 
-                if line == "":
+                if command == "":
                     continue
                 value = int(command,2)
                 self.ram[address] = value
                 address += 1
+
+
 
     def ram_read(self, address):
         """
@@ -100,11 +102,11 @@ class CPU:
             # If reg_a is < reg_b
             elif self.reg[reg_a] < self.reg[reg_b]:
                 # Set the less than flag to 1
-                self.flag = 0b00000001
+                self.flag = 0b00000100
             # If reg_a is > reg_b
             elif self.reg[reg_a] > self.reg[reg_b]:
                 # Set the greater than flag to 1
-                self.flag = 0b00000001
+                self.flag = 0b00000010
             
     # - CMP compares values in two registers (registerA vs. registerB)
     # - if == set Equal E flag to 1, 
@@ -206,12 +208,14 @@ class CPU:
                 # Call ALU operation via CMP
                 self.alu("CMP", reg_a, reg_b)
                 self.pc += 3
+                
 
             
             elif instruction == 0b01010100:
                 # JMP function
                 # Jumps to address stored in given address
-                pass
+                address = self.ram_read(self.pc + 1)
+                self.pc = self.reg[address]
 
             elif instruction == 0b01010101:
                 # JEQ

@@ -13,7 +13,7 @@ For sprint, we're adding:
         - set Greater-than G flag to 1
         - else, set to 0
 - equal (LS-8)
-- JMP instruction 
+- JMP (aka jump) instruction 
     - Jumps to address stored in given register
     - Set the PC to the address stored in the given register
 - JEQ & JNE instructions
@@ -81,20 +81,22 @@ class CPU:
         """
         self.ram[address] = value
 
-    def alu(self, op, reg_a, reg_b):
+    def alu(self, operation, reg_a, reg_b):
         """ALU operations."""
 
-        if op == "ADD":
+        if operation == "ADD":
             self.reg[reg_a] += self.reg[reg_b]
         #elif op == "SUB": etc
 
-        elif op == "SUB":
+        elif operation == "SUB":
             self.reg[reg_a] -= selfreg[reb_b]
-        elif op == "MUL":
+        elif operation == "MUL":
             self.reg[reg_a] *= self.reg[reg_b]
 
         else:
             raise Exception("Unsupported ALU operation")
+
+        # Create ability to compare registrars
 
     def trace(self):
         """
@@ -172,6 +174,26 @@ class CPU:
                 # Increment the stack pointer
                 self.reg[self.sp] += 1
                 self.pc +=2
+
+            ##### CMP, JMP, JEQ, and JNE #####
+            elif instruction == 0b10100111:
+                # CMP function
+                pass
+            
+            elif instruction == 0b01010100:
+                # JMP function
+                # Jumps to address stored in given address
+                pass
+
+            elif instruction == 0b01010101:
+                # JEQ
+                pass
+
+            elif instruction == 0b01010110:
+                # JNE
+                pass
+
+
 
             else:
                 print("Command not recognized")

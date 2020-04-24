@@ -53,7 +53,7 @@ class CPU:
         #elif op == "SUB": etc
 
         elif operation == "SUB":
-            self.reg[reg_a] -= selfreg[reb_b]
+            self.reg[reg_a] -= self.reg[reg_b]
         elif operation == "MUL":
             self.reg[reg_a] *= self.reg[reg_b]
 
@@ -66,12 +66,12 @@ class CPU:
             elif self.reg[reg_a] < self.reg[reg_b]:
                 # Set the less than flag to 1
                 print("A is less than B")
-                self.flag = 0b00000010
+                self.flag = 0b00000100
             # If reg_a is > reg_b
             elif self.reg[reg_a] > self.reg[reg_b]:
                 # Set the greater than flag to 1
                 print("A is greater than B")
-                self.flag = 0b00000100
+                self.flag = 0b00000010
             
         else:
             raise Exception("Unsupported ALU operation")
@@ -118,8 +118,9 @@ class CPU:
                 self.pc += 3
 
             elif instruction == 0b01000111:
+                # PRN
                 reg_slot = self.ram_read(self.pc + 1)
-                print(self.reg[reg_slot])
+                print('Print from PRN:',self.reg[reg_slot])
 
                 self.pc += 2
 
@@ -164,8 +165,6 @@ class CPU:
                 self.alu("CMP", reg_a, reg_b)
                 self.pc += 3
                 
-
-            
             elif instruction == 0b01010100:
                 """
                 JMP function
@@ -197,7 +196,7 @@ class CPU:
                 address stored in the given register.
                 """
                 # if flag is false (0)
-                if self.flag == 0b00000000:
+                if self.flag == 0b00000100:  
                     # jump to address stored in given register
                     address = self.ram_read(self.pc + 1)
                     self.pc = self.reg[address]
